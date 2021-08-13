@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./libs/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="player">
+        <div class="container">
+            <!--========== Top Icons ==========-->
+            <div class="icons">
+                <a href="#" class="toggler"><i class="fa fa-bars"></i></a>
+                <h1>My music</h1>
+                <a href="#"><i class="fa fa-heart"></i></a>
+            </div>
+
+            <!--========== image ==========-->
+            <div class="img">
+                <img id="img" class="image" src="profile.jpg" alt="">
+            </div>
+
+            <!--========== Title ==========-->
+            <div class="title">
+                <h1>LYRICA MUSIC</h1>
+                <P>Cool Artists - <span class="artist"></span></P>
+            </div>
+
+            <!--========== Time ==========-->
+            <div class="time">
+                <span class="song-update-time">00:00</span>
+                <span class="song-duration">00:00</span>
+            </div>
+
+            <!--========== Seek bar ==========-->
+            <div class="seek fill">
+                <div class="fill-inner"></div>
+            </div>
+        </div>
+        <!--========== Buttons ==========-->
+        <div class="audio-btns">
+            <div class="play-btns">
+                <a href="#" class="backward"><i class="fa fa-backward"></i></a>
+                <a href="#" class="play"><i class="fa fa-play"></i></a>
+                <a href="#" class="forward"><i class="fa fa-forward"></i></a>
+            </div>
+            <div class="repeat-btns">
+                <a href="#" class="repeat"><i class="fa fa-retweet"></i></a>
+                <span>
+                    <button class="decrease minus">-</button>
+                    <a href="#" class="volume-up mute"><i class="fa fa-volume-up"></i></a>
+                    <button class="increase plus">+</button>
+                </span>
+                <a href="#" class="volume-up random"><i class="fa fa-random"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        /////////////////////////////////
+        ///Problem to solve 1) next function 2) prev function 3) the shuffle button
+        //// icon on list item while playing
+
+
+
+        ///////////////////////////////////////////////
+        /////// Music info
+
+        let musics = [{name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}, {name: 'Asa1.m4a', artist: 'Asa'}, {name: 'music1.mp3', artist: 'Tope'}], counter;
+
+
+
+
+
+        //////////////////////////////////////////////
+        ///// Getting the control buttons
+
+        let play = document.querySelector('.play');
+        let img = document.querySelector('.image');
+        let next = document.querySelector('.forward');
+        let prev = document.querySelector('.backward');
+        let mutes = document.querySelector('.mute');
+        let plus = document.querySelector('.plus');
+        let minus = document.querySelector('.minus');
+        let innerFill = document.querySelector('.fill-inner');
+        let outerFill = document.querySelector('.fill');
+        let repeat = document.querySelector('.repeat');
+        let shuffle = document.querySelector('.random');
+        let musician = document.querySelector('.artist');
+        let toggler = document.querySelector('.toggler');
+        let songDuration = document.querySelector('.song-duration');
+        let songUpdateTime = document.querySelector('.song-update-time');
+        let isTrue = false;
+
+        
+        
+        // let songDuration = document.querySelector('.song-duration');
+        // let list = document.querySelector('.list');
+
+       
+
+
+        /////////////////////////////////////////////////
+        /////////////// audio instance
+            let audio = new Audio();
+
+            counter = 0;
+
+            audio.src = musics[counter].name;
+            musician.innerHTML = musics[counter].artist;
+
+
+            // play and pause beginning
+            play.addEventListener('click', audioPlay);
+
+            function audioPlay() {
+
+                if(audio.paused) {
+                    img.style.animationPlayState = "running";
+                    img.classList.add('playing');
+                    play.innerHTML = '<i class="fa fa-pause"><i>';
+                    audio.play();
+                }
+
+                else {
+                    img.style.animationPlayState = "paused";
+                    play.innerHTML = '<i class="fa fa-play"><i>';
+                    audio.pause();
+                }
+            }
+            //play and pause ending
+
+
+            playingListItem();
+
+            //next button implementation
+            next.addEventListener('click', nextFunc);
+
+            function nextFunc() {
+                
+                counter += 1;
+
+                if(counter > musics.length - 1) {
+                    counter = 0;
+                }
+
+                img.classList.remove('playing');
+                audio.pause();
+                // songDuration.innerHTML = "";
+                audio.src = musics[counter].name;
+                musician.innerHTML = musics[counter].artist;
+                audio.play();
+                img.classList.add('playing');
+            }
+            //next button ending
+
+
+            //prev button implementation
+            prev.addEventListener('click', prevFunc);
+
+            function prevFunc() {
+
+                counter -= 1;
+
+                if(counter < 0) {
+                    counter = musics.length - 1;
+                }
+                        
+                audio.pause();
+                play.innerHTML = '<i class="fa fa-play"><i>';
+                // songDuration.innerHTML = "";
+                audio.src = musics[counter].name;
+                musician.innerHTML = musics[counter].artist;
+                audioPlay();
+            }
+            //prev button ending
+
+            //muting song beginning
+            mutes.addEventListener('click', muteFunc);
+
+            function muteFunc() {
+                if(audio.muted == false) {
+                    mutes.innerHTML = '<i class="fas fa-volume-mute    ">';
+                    audio.muted = true;
+                }
+
+                else {
+                    mutes.innerHTML = '<i class="fa fa-volume-down"><i>';
+                    audio.muted = false;
+                }
+            }
+            //muting song ending
+
+            //volume up starting
+            plus.addEventListener('click', plusFunc);
+
+            function plusFunc() {
+                audio.volume += .1;
+                // document.querySelector('.demo').innerHTML += audio.volume;
+            }
+            //volume up ending
+
+            //volume down starting
+            minus.addEventListener('click', minusFunc);
+
+            function minusFunc() {
+            
+                if(audio.volume <= 0) {
+                    audio.volume = 0;
+                }
+                let vol = .1;
+                audio.volume -= vol.toFixed(2);
+                // document.querySelector('.demo').innerHTML = Number(audio.volume);
+            }
+            //volume down ending
+
+            //Time updating beginning
+            audio.addEventListener('timeupdate', updateFunc);
+
+            function updateFunc() {
+                let position = audio.currentTime / audio.duration * 100;
+                innerFill.style.width = position + '%';
+                if(audio.currentTime === audio.duration) {
+                    // audio.audioPlay();
+                    play.innerHTML = '<i class="fa fa-play"><i>';
+                    audio.pause();
+                    img.classList.remove('playing');
+                    
+
+                    setTimeout(()=> {
+                        counter += 1;
+                        audio.src = musics[counter].name;
+                        musician.innerHTML = musics[counter].artist;
+                        audioPlay();
+                    }, 1000);
+                }
+                
+
+                let min = audio.duration / 60;
+                let sec = audio.duration % 60;
+                let minCur = position;
+                // let secCur = audio.currentTime % 60;
+ 
+                songDuration.innerHTML = Number(min.toPrecision(1)) + Number(sec.toFixed(2)); 
+                songUpdateTime.innerHTML = Number(minCur.toPrecision(1));
+            }
+            //Time updating ending
+
+
+            //Outer fill bar clicking
+            outerFill.addEventListener('click', function(event) {
+                // console.log(1 / event.offsetX);
+                console.log(300 - event.offsetX);
+                audio.currentTime = event.offsetX / 100 + '%';
+                
+
+                let position = audio.currentTime / audio.duration * 100;
+
+                innerFill.style.width = position + '%';
+                
+                /* console.log(moved); 
+
+                let position = moved / audio.duration * 100; */
+
+                // img.classList.add('grow');
+                // play.innerHTML = '<i class="fa fa-pause"><i>';
+            
+                // innerFill.style.width = moved + '%';
+
+                // console.log(innerFill.style.width);
+
+                // audio.play();
+
+                // songDuration.innerHTML = Date().getMinutes + "," + position; 
+            })
+            //Outer fill bar ending
+
+
+            //Looping beginning
+            repeat.addEventListener('click', function() {
+                audio.loop = !audio.loop;
+                console.log('Looping: ' + audio.loop)
+            })
+            //Looping ending
+            
+            // shuffle beginning
+            let shuffler = ()=> {
+                counter = Math.floor(Math.random() * musics.length)
+                audio.src = musics[counter].name;
+                audio.play();
+                audio.loop = true;
+                setInterval(function() {
+                    
+                console.log(audio.duration)
+                    shuffler();
+                }, audio.duration * 60000)
+            }
+
+            // shuffle.addEventListener('click', shuffler)
+            // shuffle ending
+
+
+
+            /////////////////////////////////////////////
+            /// Playing by clicking the a list item
+
+            
+            function playingListItem() {
+                
+                //////////////////////////////////
+                //creating the music list beginning
+                let musicList = document.createElement('div');
+
+                musicList.classList.add('music-list')
+
+                document.getElementsByClassName('player')[0].appendChild(musicList);
+
+                for(let i=0; i<=musics.length - 1; i++) {
+                    let song = document.createElement('li');
+                    song.className = 'song-item';
+                    song.innerHTML = '<span style="color: yellow;" class="item-name">' + musics[i].name + '</span>' + '<i class="favourite fa fa-heart"></i>';
+                    musicList.appendChild(song);
+                }
+                //creating the music list ending
+                ////////////////////////////////
+
+
+                /////////////////////////////////////////////
+                // playing a song through the list item beginning
+                let song = document.querySelectorAll('.item-name');
+
+                for(let counter=0; counter< song.length; counter++) {
+                    song[counter].addEventListener('click', function() {
+
+                        // audio.pause();
+            
+                        audio.src = musics[counter].name;
+                        // console.log(audio.src);
+                        
+                        img.style.animationPlayState = "running";
+                        img.classList.add('playing');
+                        play.innerHTML = '<i class="fa fa-pause"><i>';
+                        audio.play();
+                    });
+            }
+                //playing a song through the list item ending
+                ////////////////////////////////////////////
+
+
+                ///////////////////////////////////////
+                // Adding a song to favourite beginning
+                let favourites = [];
+                let songs = document.querySelectorAll('.song-item');
+            
+                for(let i=0; i< songs.length; i++) {
+                    let y =songs[i].querySelector('.favourite');
+
+                
+                    y.addEventListener('click', function() {
+                        if(this.style.color == 'red') {
+                            this.style.color = 'white';
+                            favourites.splice(i, 1);
+                            return;
+                        }
+                        this.style.color = 'red';
+                        favourites.push(this.previousElementSibling.innerHTML);
+                        console.log(favourites)
+                        return;
+                    })
+                }
+                // adding a song to favourite ending
+               /////////////////////////////////////
+
+
+                ///////////////////////////////
+                // toggler function beginning
+                toggler.addEventListener('click', listFunc ); 
+                function listFunc () {
+                    document.querySelector('.music-list').classList.toggle('appear');
+                }
+                //toggler function ending
+                /////////////////////////////
+
+            }
+            
+    </script>
+
+</body>
+
+</html>
